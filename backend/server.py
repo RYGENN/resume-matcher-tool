@@ -51,9 +51,13 @@ CORS(app, resources={r"/*": {"origins": ["http://localhost:5173"], "methods": ["
 
 
 # API routes
-@app.route('/')
-def hello_world(): 
-    return 'Hello, World!'
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "azure": bool(AZURE_CONNECTION_STRING),
+        "mongo": bool(MONGO_URI)
+    }), 200
 
 nltk.download('stopwords')
 stop_words = set(stopwords.words('english'))
@@ -343,7 +347,8 @@ def clear_all_data():
  
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
 
 
 
